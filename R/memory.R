@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
 # Date (last update):  August 2017
@@ -6,6 +7,8 @@
 
 
 
+=======
+>>>>>>> a515331cf13582f38e0730c04baa5a71653c5f0a
 ##################
 .change_unit <- function(x,.from,.to) {
   # it is used for file size
