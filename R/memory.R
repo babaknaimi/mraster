@@ -1,4 +1,4 @@
-#-------------------------------------
+######-------------------------------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
 # Date (last update):  August 2017
@@ -6,7 +6,7 @@
 # Licence GPL v3
 
 #-----------------
-##################
+###################
 .change_unit <- function(x,.from,.to) {
   # it is used for file size
   .u <- c('B','K','M','G','T')
