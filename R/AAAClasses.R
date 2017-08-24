@@ -1,9 +1,12 @@
+#-------------------------------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
 # Date (last update):  August 2017
-# Version 0.1
+# Version 0.2
 # Licence GPL v3
 #------------------------
+
+setClassUnion("characterORmissing", c("character", "missing"))
 
 mmapRaster <- R6Class('mmapRaster',
                       public = list(

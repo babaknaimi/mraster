@@ -1,11 +1,11 @@
+#-------------------------------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
 # Date (last update):  August 2017
-# Version 0.1
+# Version 0.2
 # Licence GPL v3
 
 #-----------------
-
 ##################
 .change_unit <- function(x,.from,.to) {
   # it is used for file size
@@ -15,7 +15,6 @@
   .w <- .w1-.w2
   x * (1024^.w)
 }
-
 #------------
 
 .getPhysicalMemory_linux <- function(.unit='M') {
@@ -141,4 +140,39 @@
   }
   os
 }
-######################
+#------------
+
+if (!isGeneric("memory")) {
+  setGeneric("memory", function(u,...)
+    standardGeneric("memory"))
+}
+
+
+
+setMethod('memory', signature(u='characterORmissing'),
+          function(u='M',add=TRUE) {
+            if (missing(add)) add <- TRUE
+            if (missing(u)) u <- 'M'
+            u <- toupper(u)
+            if (!u %in% c('B','K','M','G','T')) {
+              warning("size unit (u) should be either of 'B','K','M','G','T'; 'M' (Mb) is considered!")
+              u <- 'M'
+            }
+
+            .os <- .get_os()
+
+            if (.os == 'windows') o <- .getPhysicalMemory_win(u)
+            else if (.os == 'linux') o <- .getPhysicalMemory_linux(u)
+            else if (.os == 'osx') o <- .getPhysicalMemory_osx(u)
+            else {
+              o <- .getPhysicalMemory_linux(u)
+              if (length(o) == 0 || any(is.null(o))) o <- .getPhysicalMemory_osx(u)
+            }
+            if (add) {
+              o <- paste(o,paste0(u,'b'))
+              return(c(total=o[1],free=o[2]))
+            } else return(o)
+          }
+)
+
+
