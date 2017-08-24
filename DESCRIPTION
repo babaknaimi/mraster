@@ -5,7 +5,7 @@ Version: 0.1.0
 Date: 2017-08-24
 Author: Babak Naimi
 Maintainer: Babak Naimi <naimi.b@gmail.com>
-Depends: R6, mmap, R (>= 3.0.0)
+Depends: methods, R6, mmap, R (>= 3.0.0)
 Description: A set of tools to deal with big raster and image files that cannot be fitted in
 memory. The package provides classes and functions to map the mamory to the raster file, and read
 the values from the pixels (cells) that are required.
