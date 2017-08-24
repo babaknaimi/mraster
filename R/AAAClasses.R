@@ -3,9 +3,7 @@
 # Date (last update):  August 2017
 # Version 0.1
 # Licence GPL v3
-
-
-
+#------------------------
 
 mmapRaster <- R6Class('mmapRaster',
                       public = list(

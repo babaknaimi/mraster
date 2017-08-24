@@ -4,7 +4,7 @@
 # Version 0.1
 # Licence GPL v3
 
-
+#-----------------
 
 ##################
 .change_unit <- function(x,.from,.to) {
