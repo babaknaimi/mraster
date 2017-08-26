@@ -1,15 +1,16 @@
-######-------------------------------------
+###################
+#-----------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
 # Date (last update):  August 2017
-# Version 0.2
+# Version 0.5
 # Licence GPL v3
 
 #-----------------
 ###################
 .change_unit <- function(x,.from,.to) {
   # it is used for file size
-  .u <- c('B','K','M','G','T')
+  .u <- c('B','K','M','G','T','P')
   .w1 <- which(.u == .from)
   .w2 <- which(.u == .to)
   .w <- .w1-.w2
@@ -17,9 +18,16 @@
 }
 #------------
 
+.mem_used <- function (.u,.r=NULL) {
+  # report the memory used by R objects in the session (based on the code of mem_used function in pryr)
+  o <- .change_unit(sum(gc()[, 1] * c(8L * .Machine$sizeof.pointer, 8)),'B',.u)
+  if (!is.null(.r)) round(o,.r)
+  else o
+}
+#---------
 .getPhysicalMemory_linux <- function(.unit='M') {
   if (!.unit %in% c('B','K','M','G','T')) {
-    warning('.unit should be one of B, K, M, G, or T; it is changed to "M" (i.e., Mb)')
+    warning('.unit should be one of B, K, M, G, T, or P; it is changed to "M" (i.e., Mb)')
     .unit <- 'M'
   }
 
@@ -47,8 +55,8 @@
 #--------------
 
 .getPhysicalMemory_osx <- function(.unit='M') {
-  if (!.unit %in% c('B','K','M','G','T')) {
-    warning('.unit should be one of B, K, M, G, or T; it is changed to "M" (i.e., Mb)')
+  if (!.unit %in% c('B','K','M','G','T','P')) {
+    warning('.unit should be one of B, K, M, G, T or P; it is changed to "M" (i.e., Mb)')
     .unit <- 'M'
   }
   .free <- .total <- NULL
@@ -98,8 +106,8 @@
 
 .getPhysicalMemory_win <- function(.unit='M') {
 
-  if (!.unit %in% c('B','K','M','G','T')) {
-    warning('.unit should be one of B, K, M, G, or T; it is changed to "M" (i.e., Mb)')
+  if (!.unit %in% c('B','K','M','G','T','P')) {
+    warning('.unit should be one of B, K, M, G, T, or P; it is changed to "M" (i.e., Mb)')
     .unit <- 'M'
   }
   .free <- .total <- NULL
@@ -150,14 +158,17 @@ if (!isGeneric("memory")) {
 
 
 setMethod('memory', signature(u='characterORmissing'),
-          function(u='M',add=TRUE) {
-            if (missing(add)) add <- TRUE
+          function(u='M',session=FALSE, echo=TRUE, .r=5) {
+            if (missing(echo)) echo <- TRUE
+            if (missing(session)) session <- FALSE
+            if (missing(.r)) .r <- 5
             if (missing(u)) u <- 'M'
             u <- toupper(u)
-            if (!u %in% c('B','K','M','G','T')) {
-              warning("size unit (u) should be either of 'B','K','M','G','T'; 'M' (Mb) is considered!")
+            if (!u %in% c('B','K','M','G','T','P')) {
+              warning("size unit (u) should be either of 'B','K','M','G','T','P'...; 'M' (Mb) is considered!")
               u <- 'M'
             }
+            gc(verbose=FALSE)
 
             .os <- .get_os()
 
@@ -168,10 +179,20 @@ setMethod('memory', signature(u='characterORmissing'),
               o <- .getPhysicalMemory_linux(u)
               if (length(o) == 0 || any(is.null(o))) o <- .getPhysicalMemory_osx(u)
             }
-            if (add) {
-              o <- paste(o,paste0(u,'b'))
-              return(c(total=o[1],free=o[2]))
-            } else return(o)
+            if (session) {
+              o <- c(o, used_by_this_session=.mem_used(u,.r))
+            }
+
+            if (!is.null(.r)) o <- round(o,.r)
+
+            if (echo) {
+              .n <- names(o)
+              .o <- paste(o,paste0(u,'b'))
+              #return(c(total=o[1],free=o[2]))
+              names(.o) <- .n
+              print(.o)
+            }
+            invisible(o)
           }
 )
 

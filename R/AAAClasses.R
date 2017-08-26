@@ -1,4 +1,4 @@
-#####-------------------------------------
+#-------------------------------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
 # Date (last update):  August 2017
@@ -8,7 +8,7 @@
 
 setClassUnion("characterORmissing", c("character", "missing"))
 
-mmapRaster <- R6Class('mmapRaster',
+.mmapRaster <- R6Class('mmapRaster',
                       public = list(
                         initialize=function(filename,nlayers,bandorder,datatype,nrows,ncols,names,factors=NULL) {
                           if (!requireNamespace('mmap')) stop('mmap package is required but is not installed on this machine!')
@@ -79,3 +79,7 @@ mmapRaster <- R6Class('mmapRaster',
                         }
                       )
 )
+#---------------
+
+
+

@@ -1,1 +1,3 @@
+import(methods,mmap)
+importFrom("R6","R6Class")
 exportPattern("^[[:alpha:]]+")
