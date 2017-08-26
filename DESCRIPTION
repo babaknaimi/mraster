@@ -1,14 +1,14 @@
 Package: mraster
 Type: Package
-Title: map memory raster (mmap Raster)
-Version: 0.1.0
+Title: map memory to raster (mmap to raster)
+Version: 0.1-1
 Date: 2017-08-24
-Author: Babak Naimi
-Maintainer: Babak Naimi <naimi.b@gmail.com>
+Authors@R: person("Babak", "Naimi", email = "naimi.b@gmail.com",role = c("aut", "cre"))
 Depends: methods, R6, mmap, R (>= 3.0.0)
-Description: A set of tools to deal with big raster and image files that cannot be fitted in
-memory. The package provides classes and functions to map the mamory to the raster file, and read
-the values from the pixels (cells) that are required.
+Suggests: knitr
+Description: A set of tools to deal with big raster and image files that cannot be fitted in 
+     memory. The package provides classes and functions to map the mamory to the raster file,
+     and read the values from the pixels (cells) that are required.
 License: GPL (>= 3)
 URL: http://r-gis.net
 Encoding: UTF-8

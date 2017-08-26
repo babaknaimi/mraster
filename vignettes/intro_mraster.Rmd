@@ -1,0 +1,76 @@
+---
+title: "Dealing with Big Raster/Images Data using mraster"
+author: "Babak Naimi"
+date: "24/08/2017"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Dealing with Big Raster/Images Data using mraster}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# mappting memory to a raster file through mraster
+
+This documents briefly introduce the mraster package, and discuss how it could be used to deal with the situation when there is big raster data available, and since it cannot be fitted into the memory, it causes problem. 
+
+The solution is used in the mraster package is the well known solution of mapping memory to the file.
+
+```r
+# to install the package, you can use the install_github on the devtools package:
+
+devtools::install_github("babaknaimi/mraster")
+
+```
+
+
+```{r install}
+# load the library:
+library(mraster)
+
+
+```
+
+# Check the size of memory
+
+The source of limitation is the memory size, which is different on different machines. The mamory is managed by the operating system, and depending on how many software and data are loaded, the available memory could be varying when a new data is going to be read. Therefore, it may happen that even when the total amount of the physical memory on a machine is enough (i.e., less than the size we need to load the data), we get the error that the memory cannot be allocated.
+
+In the mraster package, a function named 'memory' is implemented to check the amount of memory at the operating system level. It returns the total amount of physical memory, as well as the amout that is left free. The later could be varying everytime the function is called given the loads of programs and data opened.
+
+```{r memory}
+memory()
+
+# can be generated in different units (default is "M", i.e., Mega-Byte):
+
+memory('G') # Giga-Byte
+memory('T') # Terra-Byte
+memory('K') # Kilo-Byte
+
+# we can exluded the unit from the output:
+m <- memory('M') # the amount of memory is printed on screen but a numeric vector is returned
+
+m
+
+# if you do not want it be printed, use echo=FALSE
+
+m <- memory('M',echo=F) 
+
+m
+
+# you can also see how much memory is used by the current R session:
+
+memory(session=T)
+
+# the values are rounded by 5 (by default), but you can change it to any value, or say not round
+
+memory(session=T, .r=3)
+
+memory(session=T, .r=NULL)
+
+memory('T',session=T, .r=NULL) # in Tb
+
+```
+
