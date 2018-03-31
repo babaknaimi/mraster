@@ -81,5 +81,5 @@ setClassUnion("characterORmissing", c("character", "missing"))
 )
 #---------------
 
-
+setOldClass(c("mmapRaster", "R6"))
 

@@ -90,7 +90,7 @@
   a <- try(eval(.a),silent=TRUE)
   if (inherits(a,'try-error')) {
     .a <- quote({
-      .total <- as.numeric(strsplit(system("sysctl hw.physmem",intern = TRUE),": ")[[1]][2])
+      .total <- as.numeric(strsplit(system("sysctl hw.memsize",intern = TRUE),": ")[[1]][2])
       .free <- as.numeric(strsplit(system("sysctl vm.page_free_count",intern = TRUE),": ")[[1]][2])
       .w <- try(as.numeric(strsplit(system("sysctl hw.pagesize",intern = TRUE),": ")[[1]][2]),silent = TRUE)
       if (inherits(.w,'try-error')) .w <- 4096
