@@ -1,8 +1,8 @@
 Package: mraster
 Type: Package
 Title: map memory to raster (mmap to raster)
-Version: 0.1-5
-Date: 2018-03-31
+Version: 0.1-8
+Date: 2018-04-06
 Authors@R: person("Babak", "Naimi", email = "naimi.b@gmail.com",role = c("aut", "cre"))
 Depends: methods, R6, raster, mmap, R (>= 3.0.0)
 Suggests: knitr

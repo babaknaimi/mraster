@@ -2,8 +2,8 @@
 #-----------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
-# Date (last update):  August 2017
-# Version 0.5
+# Date (last update):  April 2018
+# Version 0.6
 # Licence GPL v3
 
 #-----------------
@@ -182,16 +182,19 @@ setMethod('memory', signature(u='characterORmissing'),
             if (session) {
               o <- c(o, used_by_this_session=.mem_used(u,.r))
             }
+            if (is.numeric(o)) {
+              if (!is.null(.r)) o <- round(o,.r)
 
-            if (!is.null(.r)) o <- round(o,.r)
-
-            if (echo) {
-              .n <- names(o)
-              .o <- paste(o,paste0(u,'b'))
-              #return(c(total=o[1],free=o[2]))
-              names(.o) <- .n
-              print(.o)
+              if (echo) {
+                .n <- names(o)
+                .o <- paste(o,paste0(u,'b'))
+                #return(c(total=o[1],free=o[2]))
+                names(.o) <- .n
+                print(.o)
+              }
             }
+
+
             invisible(o)
           }
 )

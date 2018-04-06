@@ -5,8 +5,11 @@
 # Version 0.1
 # Licence GPL v3
 #------------------------
-
-
+.trim <- function (x) {
+  x <- strsplit(x, "")[[1]]
+  paste(x[x != " "], collapse = "")
+}
+#----
 .LD <- function(s,t) {
   sl <- unlist(strsplit(s,''))
   tl <- unlist(strsplit(t,''))
@@ -79,12 +82,11 @@
 #---------
 .fileBase <- function (x, overwrite=FALSE) {
   if (file.exists(x)) {
-    if (!file.info(x)$isdir) stop("the filename can not be written because a file (which has not been created by the sdm package) with a name similar to the specified filename does exist!")
+    if (!file.info(x)$isdir) stop("the new filename cannot be created because a file (which has not been created by the mraster package) with a name similar to the specified newfile exist!")
     if (!overwrite) stop(paste(x,"exists. You can use overwrite=TRUE to overwrite it!"))
     unlink(x, recursive = TRUE,force=TRUE)
   }
   dir.create(x,recursive = TRUE)
-  dir.create(paste0(x,'/Models'),recursive = TRUE)
   file.exists(x)
 }
 #---------

@@ -1,5 +1,4 @@
 import(methods,mmap)
 importFrom("R6","R6Class")
-#importFrom('raster','getValues')
 exportMethods("[")
 exportPattern("^[[:alpha:]]+")

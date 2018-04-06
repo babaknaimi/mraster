@@ -298,6 +298,14 @@
   .meta
 }
 #--------------
+
+.getGDALband <- function(filename,band=1) {
+  xx <- new("GDALReadOnlyDataset", filename)
+  .xx <- as.vector(rgdal::getRasterData(xx,band = band))
+  rgdal::GDAL.close(xx)
+  .xx
+}
+
 #----------- check whether the driver for a raster dataset is gdal:
 .isGDAL <- function(x) {
   if (inherits(x,'Raster')) {
@@ -305,7 +313,7 @@
     else return(x@file@driver == 'gdal')
   } else if (inherits(x,'character')) {
     if (!file.exists(x)) stop('filename does not exist!')
-    .meta <- try(.getGDALmeta(filename),silent = TRUE)
+    .meta <- try(.getGDALmeta(x),silent = TRUE)
     if (inherits(.meta,"try-error")) return(FALSE)
     else return(TRUE)
   }
