@@ -2,8 +2,8 @@
 #-----------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
-# Date (last update):  April 2018
-# Version 0.6
+# Date (last update):  March 2019
+# Version 0.8
 # Licence GPL v3
 
 #-----------------
@@ -60,46 +60,50 @@
     .unit <- 'M'
   }
   .free <- .total <- NULL
+
   .a <- quote({
-    a <- system("top -l 1 | grep PhysMem:", intern = TRUE)
-    a <- strsplit(strsplit(a,': ')[[1]][[2]],' ')[[1]]
-    #---- for total memory:
-    .w <- strsplit(a[1],'')[[1]]
-    .ww <- .w[length(.w)]
-    .w <- as.numeric(paste(.w[1:(length(.w)-1)],collapse=''))
-    if (.ww %in%  c('B','K','M','G','T')) {
-      .total <- .change_unit(.w,.ww,.unit) # get the total memory in Mb
-    } else if (!is.na(as.numeric(.ww))) {
-      .w <- as.numeric(a[1])
-      .total <- .change_unit(.w,'B',.unit) # get the total memory in Mb
-      # we assumed it is in byte here!!! (but not likely to get here)
-    }
-    #---- for free memory:
-    .w <- strsplit(a[5],'')[[1]]
-    .ww <- .w[length(.w)]
-    .w <- as.numeric(paste(.w[1:(length(.w)-1)],collapse=''))
-    if (.ww %in%  c('B','K','M','G','T')) {
-      .free <- .change_unit(.w,.ww,.unit) # get the total memory in Mb
-    } else if (!is.na(as.numeric(.ww))) {
-      .w <- as.numeric(a[5])
-      .free <- .change_unit(.w,'B',.unit) # get the total memory in Mb
-      # we assumed it is in byte here!!! (but not likely to get here)
-    }
+    .total <- as.numeric(strsplit(system("sysctl hw.memsize",intern = TRUE),": ")[[1]][2])
+    .free <- as.numeric(strsplit(system("sysctl vm.page_free_count",intern = TRUE),": ")[[1]][2])
+    .w <- try(as.numeric(strsplit(system("sysctl hw.pagesize",intern = TRUE),": ")[[1]][2]),silent = TRUE)
+    if (inherits(.w,'try-error')) .w <- 4096
+    .free <- .free * .w
+    .free <- .change_unit(.free,'B',.unit)
+    .total <- .change_unit(.total,'B',.unit)
   })
 
   a <- try(eval(.a),silent=TRUE)
+
   if (inherits(a,'try-error')) {
     .a <- quote({
-      .total <- as.numeric(strsplit(system("sysctl hw.memsize",intern = TRUE),": ")[[1]][2])
-      .free <- as.numeric(strsplit(system("sysctl vm.page_free_count",intern = TRUE),": ")[[1]][2])
-      .w <- try(as.numeric(strsplit(system("sysctl hw.pagesize",intern = TRUE),": ")[[1]][2]),silent = TRUE)
-      if (inherits(.w,'try-error')) .w <- 4096
-      .free <- .free * .w
-      .free <- .change_unit(.free,'B',.unit)
-      .total <- .change_unit(.w,'B',.unit)
+      a <- system("top -l 1 | grep PhysMem:", intern = TRUE)
+      a <- strsplit(strsplit(a,': ')[[1]][[2]],' ')[[1]]
+      #---- for total memory:
+      .w <- strsplit(a[1],'')[[1]]
+      .ww <- .w[length(.w)]
+      .w <- as.numeric(paste(.w[1:(length(.w)-1)],collapse=''))
+      if (.ww %in%  c('B','K','M','G','T')) {
+        .total <- .change_unit(.w,.ww,.unit) # get the total memory in Mb
+      } else if (!is.na(as.numeric(.ww))) {
+        .w <- as.numeric(a[1])
+        .total <- .change_unit(.w,'B',.unit) # get the total memory in Mb
+        # we assumed it is in byte here!!! (but not likely to get here)
+      }
+      #---- for free memory:
+      .w <- strsplit(a[5],'')[[1]]
+      .ww <- .w[length(.w)]
+      .w <- as.numeric(paste(.w[1:(length(.w)-1)],collapse=''))
+      if (.ww %in%  c('B','K','M','G','T')) {
+        .free <- .change_unit(.w,.ww,.unit) # get the total memory in Mb
+      } else if (!is.na(as.numeric(.ww))) {
+        .w <- as.numeric(a[5])
+        .free <- .change_unit(.w,'B',.unit) # get the total memory in Mb
+        # we assumed it is in byte here!!! (but not likely to get here)
+      }
+      .total <- .tatal + .free
     })
     a <- try(eval(.a),silent=TRUE)
   }
+
   c(total=.total,free=.free)
 }
 #-----------
@@ -114,11 +118,11 @@
 
   .a <- quote({
     .free <- system('wmic OS get FreePhysicalMemory /Value',intern = TRUE)[3]
-    .free <- as.numeric(strsplit(a,'=')[[1]][2]) / (1024)
+    .free <- as.numeric(strsplit(.free,'=')[[1]][2]) / (1024)
     .free <- .change_unit(.free,'K',.unit)
 
     .total <- system('wmic computersystem get TotalPhysicalMemory /Value',intern = TRUE)[3]
-    .total <- as.numeric(strsplit(a,'=')[[1]][2])
+    .total <- as.numeric(strsplit(.total,'=')[[1]][2])
     .tatal <- .change_unit(.total,'B',.unit)
   })
 

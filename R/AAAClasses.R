@@ -1,12 +1,13 @@
 #-------------------------------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
-# Date (last update):  August 2017
-# Version 0.2
+# Date (last update):  Feb. 2019
+# Version 0.3
 # Licence GPL v3
 #------------------------
 
 setClassUnion("characterORmissing", c("character", "missing"))
+setClassUnion("matrixORdata.frame", c("matrix", "data.frame"))
 
 .mmapRaster <- R6Class('mmapRaster',
                       public = list(
@@ -28,15 +29,80 @@ setClassUnion("characterORmissing", c("character", "missing"))
                         },
                         getValues=function(cells) {
                           private$connect()
-                          .getValues(private$obj,nl=private$nlayers,cells = cells,n=private$Names,bo=private$bandorder,.ncol = private$ncols)
+                          .v <- .getValues(private$obj,nl=private$nlayers,cells = cells,n=private$Names,bo=private$bandorder,.ncol = private$ncols)
+                          private$disconnect()
+                          return(.v)
+                        },
+                        writeValues=function(x,band=NULL,cells=NULL,echo=TRUE) {
+                          .dx <- dim(x)
+
+                          if (is.null(.dx)) {
+                            if (is.null(band)) band <- 1
+                            else if (length(band) > 1) stop('the data are one dimension while you specified more than a single band!')
+
+                            if (band > private$nlayers) stop('the specified band does not exist!')
+
+                            if (is.null(cells) || is.na(cells)) {
+                              cells <- 1:length(x)
+                            } else {
+                              if (length(cells) != length(x)) stop('length of cells should be the same as the number of rows in x')
+                            }
+                          } else {
+                            if (is.null(band)) band <- 1:.dx[2]
+                            else {
+                              if (length(band) != .dx[2]) stop('the dimension of the input values are not the same as the specified bands!')
+                              if (any(band > private$nlayers)) stop('at least one of the specified bands does/do not exist!')
+                            }
+                            if (is.null(cells) || is.na(cells)) {
+                              cells <- 1:dx[1]
+                            } else {
+                              if (length(cells) != .dx[1]) stop('length of cells should be the same as the number of rows in x')
+                            }
+                          }
+
+                          private$connect()
+
+                          if (private$bandorder == 'BSQ') {
+                            if (is.null(.dx)) {
+                              a <- ((band - 1) * private$ncells) + cells
+                              private$obj[a] <- x
+                            } else {
+                              for (i in 1:.dx[2]) {
+                                a <- ((band[i] - 1) * private$ncells) + cells
+                                private$obj[a] <- as.vector(x[,i])
+                              }
+                            }
+                            if (echo) print('values are successfully written to the file!')
+                          } else if (private$bandorder == 'BIP') {
+                            if (is.null(.dx)) {
+                              private$obj[seq(private$nlayers*(cells[1]-1) + band,private$ncells*private$nlayers,by=private$nlayers)] <- x
+                            } else {
+                              for (i in 1:.dx[2]) {
+                                private$obj[seq(private$nlayers*(cells[1]-1) + band[i],private$ncells*private$nlayers,by=private$nlayers)] <- as.vector(x[,i])
+                              }
+                            }
+                            if (echo) print('values are successfully written to the file!')
+                          } else {
+                            if (is.null(.dx)) {
+                              a <- rep(.cells + trunc((cells - 1) / private$ncols) * private$ncols * (private$nlayers-1) , each=1) + (band-1) * private$ncols
+                              private$obj[a] <- x
+                            } else {
+                              for (i in 1:.dx[2]) {
+                                a <- rep(.cells + trunc((cells - 1) / private$ncols) * private$ncols * (private$nlayers-1) , each=1) + (band[i]-1) * private$ncols
+                                private$obj[a] <- as.vector(x[,i])
+                              }
+                            }
+                            if (echo) print('values are successfully written to the file!')
+
+                          }
                           private$disconnect()
                         },
                         format=function(...) {
                           c(
                             paste0('Class: ',class(self)[1]),
-                            paste0('======================'),
+                            paste0('========================================='),
                             paste0('filename: ',private$filename),
-                            paste0('ncell: ',private$ncells),
+                            paste0('number of cells: ',private$ncells),
                             paste0('nlayers: ',private$nlayers),
                             paste0('names: ',paste(private$Names,collapse=', '))
                           )
@@ -111,15 +177,16 @@ setClassUnion("characterORmissing", c("character", "missing"))
                         },
                         getValues=function(cells) {
                           private$connect()
-                          .getValues(private$obj,nl=private$nlayers,cells = cells,n=private$Names,bo=private$bandorder,.ncol = private$ncols)
+                          .v <- .getValues(private$obj,nl=private$nlayers,cells = cells,n=private$Names,bo=private$bandorder,.ncol = private$ncols)
                           private$disconnect()
+                          return(.v)
                         },
                         format=function(...) {
                           c(
                             paste0('Class: ',class(self)[1]),
-                            paste0('======================'),
+                            paste0('========================================'),
                             paste0('filename: ',private$filename),
-                            paste0('ncell: ',private$ncells),
+                            paste0('number of cells: ',private$ncells),
                             paste0('nlayers: ',private$nlayers),
                             paste0('names: ',paste(private$Names,collapse=', '))
                           )

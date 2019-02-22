@@ -271,7 +271,7 @@
 
 .getGDALmeta <- function(filename) {
   filename <- .normalizePath(filename)
-  .inf <- rgdal::GDALinfo(filename)
+  .inf <- rgdal::GDALinfo(filename,returnStats=FALSE)
   .attr <- attributes(.inf)
   .meta <- list()
   .meta$nrows <- .inf[[1]]
