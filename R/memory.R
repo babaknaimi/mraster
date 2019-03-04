@@ -3,7 +3,7 @@
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): August 2017
 # Date (last update):  March 2019
-# Version 0.8
+# Version 1.0
 # Licence GPL v3
 
 #-----------------
@@ -119,11 +119,11 @@
   .a <- quote({
     .free <- system('wmic OS get FreePhysicalMemory /Value',intern = TRUE)[3]
     .free <- as.numeric(strsplit(.free,'=')[[1]][2]) / (1024)
-    .free <- .change_unit(.free,'K',.unit)
+    .free <- .change_unit(.free,'M',.unit)
 
     .total <- system('wmic computersystem get TotalPhysicalMemory /Value',intern = TRUE)[3]
     .total <- as.numeric(strsplit(.total,'=')[[1]][2])
-    .tatal <- .change_unit(.total,'B',.unit)
+    .total <- .change_unit(.total,'B',.unit)
   })
 
   a <- try(eval(.a),silent=TRUE)

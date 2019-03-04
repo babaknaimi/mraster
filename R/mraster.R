@@ -1,8 +1,8 @@
 #-------------------------------------
 # Author: Babak Naimi, naimi.b@gmail.com
 # Date (first version): March 2018
-# Date (last update):  March 2018
-# Version 0.1
+# Date (last update):  March 2019
+# Version 0.3
 # Licence GPL v3
 #------------------------
 
@@ -129,7 +129,7 @@ if (!isGeneric("mraster")) {
 
 setMethod('mraster', signature(x='character'),
           function(x,...) {
-            .readRasterR6(x)
+            .readRasterR6(normalizePath(x,'/'))
 
           }
 )
